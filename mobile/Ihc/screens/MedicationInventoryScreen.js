@@ -74,7 +74,7 @@ class MedicationInventoryScreen extends Component<{}> {
   render() {
 
     // Test to see if anything shows up in the table
-    /*tempRows = [];
+    tempRows = [];
 
     medication1 = {
       name: 'Medication',
@@ -87,12 +87,11 @@ class MedicationInventoryScreen extends Component<{}> {
         comments: 'these are comments'
       }
     }
-    tempRows.push(medication1);*/
+    tempRows.push(medication1);
     return (
       <Container>
 
         <View style={styles.headerContainer}>
-          <Text style={styles.title}>Medication Inventory</Text>
         </View>
 
         <ScrollView contentContainerStyle={styles.tableContainer} horizontal>

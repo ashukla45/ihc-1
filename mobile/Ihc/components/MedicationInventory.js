@@ -60,7 +60,7 @@ export default class MedicationInventory extends Component<{}> {
   // Renders each column in a row
   renderCol = (element, keyFn, index) => {
     return (
-      <Col style={styles.otherCol} size={2} key={keyFn(index)}>
+      <Col style={styles.otherCol} size={5} key={keyFn(index)}>
         <Text>{element}</Text>
       </Col>
     );
@@ -105,8 +105,10 @@ export default class MedicationInventory extends Component<{}> {
   }
 
   render() {
+
     // Render row for header, then render all the rows
     return (
+
       <View style={styles.container}>
 
         <NewMedicationModal
@@ -124,14 +126,20 @@ export default class MedicationInventory extends Component<{}> {
           medicationProperties={this.state.medicationProperties}
         />
 
+
+        <Button style={styles.buttonContainer}
+          onPress={this.openNewModal}
+          text='Add Medication' />
+
+        <Text style={styles.title}>Medication Inventory{"\n"}</Text>
+
+
         <Grid>
           {this.renderHeader(this.tableHeaders, (i) => `header${i}`)}
           {this.props.rows.map( row => this.renderRow(row, (i) => `row${i}`) )}
         </Grid>
 
-        <Button style={styles.buttonContainer}
-          onPress={this.openNewModal}
-          text='Add Medication' />
+        
       </View>
     );
   }
@@ -141,14 +149,25 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+   headerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 25,
+    textAlign: 'center',
+},
   rowContainer: {
     flex: 1,
     alignSelf: 'stretch',
     minHeight: 32
   },
   otherCol: {
-    borderWidth: 1
+    borderWidth: 1,
+    minWidth: 150,
+    minHeight: 25
   },
+
   headerRow: {
     backgroundColor: '#dbdbdb',
     borderWidth: 1,
@@ -160,7 +179,10 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainer: {
-    width: 150,
-    height: 40,
+    position: 'relative', 
+    top: 38, 
+    left: 550, 
+    width: 200,
+    height: 30,
   },
 });
