@@ -61,7 +61,7 @@ export default class MedicationInventory extends Component<{}> {
   renderCol = (element, keyFn, index) => {
     return (
       <Col style={styles.otherCol} size={5} key={keyFn(index)}>
-        <Text>{element}</Text>
+        <Text style={styles.text}>{element}</Text>
       </Col>
     );
   }
@@ -73,7 +73,7 @@ export default class MedicationInventory extends Component<{}> {
     let medicationKey = medData.shift();    
     
     // Renders each property
-    let cols = medData.map( (e,i) => {
+    let cols = medData.map((e,i) => {
       return this.renderCol(e,keyFn,i);
     });
     
@@ -148,6 +148,7 @@ export default class MedicationInventory extends Component<{}> {
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+
   },
    headerContainer: {
     justifyContent: 'center',
@@ -158,9 +159,11 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
 },
   rowContainer: {
+    borderWidth: 1,
     flex: 1,
     alignSelf: 'stretch',
-    minHeight: 32
+    flexDirection: 'row',
+    justifyContent: 'center'
   },
   otherCol: {
     borderWidth: 1,
@@ -177,6 +180,7 @@ export const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
+    width: 130,
   },
   buttonContainer: {
     position: 'relative', 

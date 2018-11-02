@@ -84,10 +84,12 @@ class MedicationInventoryScreen extends Component<{}> {
         quantity: 6, 
         dosage: 2, 
         units: 'kgs', 
-        comments: 'these are comments'
+        comments: 'these are comments that are long that are long that are long that are long that are long'
       }
     }
+   
     tempRows.push(medication1);
+
     return (
       <Container>
 
@@ -112,20 +114,24 @@ const styles = StyleSheet.create({
   headerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
-    textAlign: 'center',
-  },
+ },
   tableContainer: {
-    flex: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
+  
   footerContainer: {
     flex: 1,
     flexDirection: 'row',
     height: 40,
     margin: 4,
   },
+  
+  text: {
+    textAlign: 'center',
+    width: 130,
+  },
+  
   button: {
     width: 120,
     height: 60 

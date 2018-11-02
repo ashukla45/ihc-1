@@ -7,6 +7,8 @@ import {
 } from 'react-native';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import {stringDate} from '../util/Date';
+import {shortDate} from '../util/Date';
+
 import MedicationCheckmarks from '../models/MedicationCheckmarks';
 import {localData} from '../services/DataService';
 import Button from './Button';
@@ -26,7 +28,7 @@ export default class MedicationTable extends Component<{}> {
   constructor(props) {
     super(props);
     this.state = {
-      todayDate: stringDate(new Date()),
+      todayDate: shortDate(stringDate(new Date())),
       drugNames: new Set(),
       dateToUpdates: {}
     };
@@ -123,7 +125,7 @@ export default class MedicationTable extends Component<{}> {
   renderButtonColumn(dateToUpdates, names, dates) {
     const rows = names.map( (name, i) => {
       // A drug update with today's date
-      const todayUpdate = this.updateWithName(dateToUpdates[stringDate(new Date())], name);
+      const todayUpdate = this.updateWithName(dateToUpdates[shortDate(stringDate(new Date()))], name);
 
       // Find the previous update to be passed in to change/refill if an update
       // for today doesn't exist

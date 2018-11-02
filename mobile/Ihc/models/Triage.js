@@ -32,7 +32,10 @@ export default class Triage {
     triage.patientKey = patientKey;
     triage.lastUpdated = new Date().getTime();
 
+    
+
     // Go through test objects, and add the result to the triage object
+
     for(let obj of Object.values(labTestObjects)) {
       triage[obj.propertyName] = obj.options[obj.result];
     }
@@ -78,11 +81,11 @@ export default class Triage {
       //---END IF---
       labsDone: 'bool',
       //---IF LABS DONE---
-      bgl: 'string?',
+      hb: 'string?',
       a1c: 'string?',
+      bgl: 'string?',
       fasting: 'bool?',
       pregnancyTest: 'string?',
-      //---IF URINE TEST---
       urineTestDone: 'bool',
       leukocytes: 'string?',
       blood: 'string?',
@@ -136,11 +139,11 @@ Triage.schema = {
     //---END IF---
     labsDone: 'bool',
     //---IF LABS DONE---
-    bgl: 'string?',
+    hb: 'string?',
     a1c: 'string?',
+    bgl: 'string?',
     fasting: 'bool?',
     pregnancyTest: 'string?',
-    //---IF URINE TEST---
     urineTestDone: 'bool',
     leukocytes: 'string?',
     blood: 'string?',
@@ -208,11 +211,20 @@ FemaleTriage = MaleTriage.extend({
 MaleTriage = MaleTriage.extend({labsDone: t.Boolean});
 FemaleTriage = FemaleTriage.extend({labsDone: t.Boolean});
 
+//MaleTriage = MaleTriage.extend({urineTestDone: t.Boolean});
+//FemaleTriage = FemaleTriage.extend({urineTestDone: t.Boolean});
+//MaleTriageLabs = MaleTriageLabs.extend({urineTestDone: t.Boolean});
+//FemaleTriageLabs = FemaleTriageLabs.extend({urineTestDone: t.Boolean});
+ 
 labTestObject = {
-  bgl: t.maybe(t.String),
   a1c: t.maybe(t.String),
-  fasting: t.maybe(t.Boolean),
-  pregnancyTest: t.maybe(t.String)
+  bgl: t.maybe(t.String),
+  fasting: t.Boolean, 
+  hb: t.maybe(t.String),
+  pregnancyTest: t.maybe(t.String),
+  urineTestDone: t.maybe(t.Boolean),
+
+
 };
 
 MaleTriageLabs = MaleTriage.extend(labTestObject);
@@ -220,9 +232,9 @@ FemaleTriageLabs = FemaleTriage.extend(labTestObject);
 
 // Show urineTestDone button last so that the special urine test wheels will
 // show up beneath this
-MaleTriage = MaleTriage.extend({urineTestDone: t.Boolean});
-FemaleTriage = FemaleTriage.extend({urineTestDone: t.Boolean});
-MaleTriageLabs = MaleTriageLabs.extend({urineTestDone: t.Boolean});
-FemaleTriageLabs = FemaleTriageLabs.extend({urineTestDone: t.Boolean});
+//MaleTriage = MaleTriage.extend({urineTestDone: t.Boolean});
+//FemaleTriage = FemaleTriage.extend({urineTestDone: t.Boolean});
+//MaleTriageLabs = MaleTriageLabs.extend({urineTestDone: t.Boolean});
+//FemaleTriageLabs = FemaleTriageLabs.extend({urineTestDone: t.Boolean});
 
 /* eslint-enable no-undef */
