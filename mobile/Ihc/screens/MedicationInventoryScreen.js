@@ -84,7 +84,7 @@ class MedicationInventoryScreen extends Component<{}> {
         quantity: 6, 
         dosage: 2, 
         units: 'kgs', 
-        comments: 'these are comments that are long that are long that are long that are long that are long'
+        comments: 'these are comments',
       }
     }
    
@@ -128,8 +128,8 @@ const styles = StyleSheet.create({
   },
   
   text: {
-    textAlign: 'center',
-    width: 130,
+    textAlign: 'right',
+    width: 180,
   },
   
   button: {
