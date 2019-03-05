@@ -4,34 +4,33 @@ import {
   Text,
   View
 } from 'react-native';
+
 import { Col, Row, Grid } from 'react-native-easy-grid';
-import NewMedicationModal from './NewMedicationModal';
 import UpdateMedicationModal from './UpdateMedicationModal';
 import Button from './Button';
-import Medication from '../models/Medication';
+let t = require('tcomb-form-native');
 
 export default class MedicationInventory extends Component<{}> {
   /*
    * Expects in props:
    *  {
    *    rows: [Medication],
-   *    saveEditModal: function
-   *    saveNewModal: function
+   *    createMedication: function,
+   *    updateMedication: function,
+   *    deleteMedication: function
    *  }
    */
+
   constructor(props) {
     super(props);
     this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes'];
     this.rowNum = 0;
-    // showNewModal is the modal for new medication
-    // showEditModal is the modal to edit medication
-    // name is the name of the medication
-    // medicationKey is the key of the medication we are editing in the Modal
-    // medicationProperties is an array of the medication properties
-    this.state = {showNewModal: false, showEditModal: false, name: null, medicationKey: null, medicationProperties: null, newMedication:null};
+
+    const formValues = {drugName: null, quantity: null, dosage: null, units: null, comments: null};
+    this.state = { showModal: false, medicationKey: null, formOptions: this.addModalFormOptions, formValues: formValues};
   }
 
-getStyle(index) {
+  getStyle(index) {
     switch(index) {
       case 0:
         return styles.drugNameCol;
@@ -61,16 +60,16 @@ getStyle(index) {
     }
   }
 
-getText(index) {
+  getTextStyle(index) {
     switch(index) {
       case 0: // drug name
-      return styles.drugText;
+        return styles.drugText;
       case 1: // quantity
-      return styles.otherText;
+        return styles.otherText;
       case 2: // dosage
-      return styles.otherText;
+        return styles.otherText;
       case 3: // units
-      return styles.otherText;
+        return styles.otherText;
       case 4: // notes
         return styles.notesText;
       default:
@@ -78,76 +77,107 @@ getText(index) {
     }
   }
 
-getHeaderText(index) {
-    switch(index) {
-      case 0: // drug name
-      return styles.drugText;
-      case 1: // quantity
-      return styles.otherText;
-      case 2: // dosage
-      return styles.otherText;
-      case 3: // units
-      return styles.otherText;
-      case 4: // notes
-        return styles.notesHeaderText;
-      default:
-        return styles.otherText;
+  addModalFormOptions = {
+    fields: {
+      comments: {
+        multiline: true,
+      },
+    }
+  };
+
+  editModalFormOptions = {
+    fields: {
+      drugName: {
+        editable: false,
+      },
+      dosage: {
+        editable: false,
+      },
+      units: {
+        editable: false, //TODO: units dropdown menu is not disabled
+      },
+      comments: {
+        multiline: true,
+      },
+    }
+  };
+
+  openEditModal = (medication) => {
+    const medicationKey = medication.key;
+    const formValues = this.getFormValuesFromMedication(medication);
+    this.setState({ showModal: true, medicationKey: medicationKey, formOptions: this.editModalFormOptions, formValues: formValues });
+  }
+
+  openAddModal = () => {
+    const formValues = {drugName: null, quantity: null, dosage: null, units: null, comments: null};
+    this.setState({ showModal: true, medicationKey: null, formOptions: this.addModalFormOptions, formValues: formValues });
+  }
+
+  closeModal = () => {
+    this.setState({ showModal: false, formOptions: this.addModalFormOptions });
+  }
+  saveModal = (newMedication) => {
+    if (this.state.medicationKey == null) {
+      this.props.createMedication(newMedication);
+    } else {
+      this.props.updateMedication(this.state.medicationKey, newMedication);
     }
   }
-  // Modal to add new medication
-  openNewModal = () => {
-    this.setState({showNewModal: true});
-  }
-  closeNewModal = () => {
-    this.setState({showNewModal: false, newMedication: null});
+
+  deleteMedication = (medication) => {
+    const medicationKey = medication.key;
+    this.props.deleteMedication(medicationKey);
   }
 
-  addMedication = (newMedication) => {
-    this.setState({newMedication: newMedication});
+  isEditModal = () => {
+    return this.state.medicationKey !== null;
   }
 
-
-  // Modal to edit existing medication
-  openEditModal = (name, medicationKey, medicationProperties) => {
-    this.setState({showEditModal: true, name: name, medicationKey: medicationKey, medicationProperties: medicationProperties});
+  getFormValuesFromMedication(medication) {
+    let drugName = medication.drugName;
+    let quantity = medication.quantity;
+    let dosage = medication.dosage;
+    let units = medication.units;
+    let comments = medication.comments;
+    return {drugName: drugName, quantity: quantity, dosage: dosage, units: units, comments: comments};
   }
-  closeEditModal = () => {
-    this.setState({showEditModal: false, name: null, medicationKey: null, medicationProperties: null});
-  }
 
-  updateMedication = (newmedicationProperties) => {
-    this.setState({medicationProperties: newmedicationProperties});
+  updateFormValues = (values) => {
+    this.setState({formValues: values});
   }
 
   // Renders each column in a row
   renderCol = (element, keyFn, index) => {
-    console.log("index " + index);
     return (
       <Col style={this.getStyle(index)} size={this.getSize(index)} key={keyFn(index)}>
-        <Text style={this.getText(index)}>{element}</Text>
+        <Text style={this.getTextStyle(index)}>{element}</Text>
       </Col>
     );
   }
 
-  renderRow = (data, keyFn) => {
+  extractMedicationElements = (medication) => {
+    let arr = [];
+    arr[0] = medication.drugName;
+    arr[1] = medication.quantity;
+    arr[2] = medication.dosage;
+    arr[3] = medication.units;
+    arr[4] = medication.comments;
+    return arr;
+  }
+
+  renderRow = (medication, keyFn) => {
     //puts the properties of medication into an array
-    let medData = Object.keys(data.properties).map(i => data.properties[i]);
-    //pops the medicationKey from array
-    let medicationKey = medData.shift();    
-    
+    let medData = this.extractMedicationElements(medication);
+
     // Renders each property
     let cols = medData.map( (e,i) => {
       return this.renderCol(e,keyFn,i);
     });
-    
-    // Puts the medicationKey back into array
-    medData.push(medicationKey);
 
     return (
-
       // Entire row is clickable to open a modal to edit
       <Row key={`row${this.rowNum++}`} style={styles.rowContainer}
-      onPress={() => this.openEditModal(medData[0], medicationKey, medData)}>
+        onPress={() => this.openEditModal(medication)}>
         {cols}
       </Row>
     );
@@ -156,7 +186,7 @@ getHeaderText(index) {
   renderHeader(data, keyFn) {
     const cols = data.map( (e,i) => (
       <Col size={this.getSize(i)} style={this.getStyle(i)} key={keyFn(i)}>
-        <Text style={this.getHeaderText(i)}>{e}</Text>
+        <Text style={styles.text}>{e}</Text>
       </Col>
     ));
 
@@ -168,62 +198,37 @@ getHeaderText(index) {
   }
 
   render() {
-
     // Render row for header, then render all the rows
     return (
-
       <View style={styles.container}>
-
-        <NewMedicationModal
-          showModal={this.state.showNewModal}
-          closeModal={this.closeNewModal}
-          addMedication={this.addMedication}
-          saveModal={() => this.props.saveModal1(newMedication)}
-        />
-
-        <UpdateMedicationModal
-          showModal={this.state.showEditModal}
-          closeModal={this.closeEditModal}
-          saveModal={() => this.props.saveModal2(this.state.medicationKey, this.state.medicationProperties)}
-          updateMedication={this.updateMedication}
-          medicationProperties={this.state.medicationProperties}
-        />
-
-
         <Button style={styles.buttonContainer}
-          onPress={this.openNewModal}
+          onPress={() => this.openAddModal()}
           text='Add Medication' />
 
-        <Text style={styles.title}>Medication Inventory{"\n"}</Text>
-
+        <UpdateMedicationModal
+          showModal={this.state.showModal}
+          formOptions={this.state.formOptions}
+          formValues={this.state.formValues}
+          closeModal={this.closeModal}
+          saveModal={this.saveModal}
+          isEditModal={this.isEditModal}
+          deleteMedication={this.deleteMedication}
+          updateFormValues={this.updateFormValues}
+        />
 
         <Grid>
           {this.renderHeader(this.tableHeaders, (i) => `header${i}`)}
           {this.props.rows.map( row => this.renderRow(row, (i) => `row${i}`) )}
         </Grid>
-
-        
       </View>
     );
   }
 }
 
-
-  
-
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-
   },
-   headerContainer: {
-    justifyContent: 'center',
-    alignItems: 'stretch',
-  },
-  title: {
-    fontSize: 25,
-    textAlign: 'center',
-},
   rowContainer: {
     borderWidth: 1,
     flex: 1,
@@ -231,22 +236,15 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center'
   },
-
   notesCol: {
     borderWidth: 1,
-    minWidth: 330,
   },
-  
   otherCol: {
     borderWidth: 1,
-    maxWidth: 80,
   },
-
   drugNameCol: {
     borderWidth: 1,
-    minWidth: 170,
   },
-
   headerRow: {
     backgroundColor: '#dbdbdb',
     borderWidth: 1,
@@ -254,35 +252,12 @@ export const styles = StyleSheet.create({
     alignSelf: 'stretch',
     flexDirection: 'row',
   },
-
-  drugText: {
-    textAlign: "center",
-    width: 150,
-  },
-  
   otherText: {
     textAlign: 'center',
     width: 70,
   },
-
-  notesText: {
-    textAlign: 'left',
-    width: 130,
-  },
-
-  notesHeaderText: {
-    textAlign: 'right',
-    width: 170,
-  },
-
   buttonContainer: {
-    position: 'relative', 
-    top: 38, 
-    left: 525, 
-    width: 200,
-    height: 30,
+    width: 150,
+    height: 40,
   },
 });
-
-
-

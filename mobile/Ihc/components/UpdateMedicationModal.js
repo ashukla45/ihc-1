@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  TextInput,
-  Text,
   Modal,
   View
 } from 'react-native';
+let t = require('tcomb-form-native');
+let Form = t.form.Form;
+
 import Button from './Button';
+import Medication from '../models/Medication';
 
 /*
  * Modal to update a status object's notes field
@@ -18,51 +20,57 @@ export default class UpdateMedicationModal extends Component<{}> {
    *    showModal: boolean
    *    closeModal: function
    *    saveModal: function
-   *    updateMedication: function
-   *    medicationProperties: array
    *  }
    */
   constructor(props) {
     super(props);
-    this.medication = {
-      name: 'Medication',
-      properties: {
-        medicationKey: '',
-        drugName: '',
-        quantity: '0',
-        dosage: '0',
-        units: '',
-        comments: '' //Consider keeping track of multiple comments (array of strings)
-      }
-    };
   }
 
-  updateName(drugName) {
-    this.medication.properties.drugName = drugName;
-    this.props.addMedication(this.medication);
+  Units = t.enums({
+    kg: 'kg',
+    g: 'g',
+    mg: 'mg',
+    ml: 'ml'
+  });
+
+  Medication = t.struct({
+    drugName: t.String,
+    quantity: t.Number,
+    dosage: t.Number,
+    units: this.Units,
+    comments: t.maybe(t.String)
+  });
+
+  onFormChange = (value) => {
+    this.props.updateFormValues(value);
   }
 
-  updateQuantity(quantity) {
-    this.medication.properties.quantity = quantity;
-    this.props.addMedication(this.medication);
+  submit = () => {
+    if(!this.refs.form.validate().isValid()) {
+      return;
+    }
+    const form = this.refs.form.getValue();
+    const medication = Medication.extractFromForm(form);
+
+    this.props.saveModal(medication);
   }
 
-  updateDosage(dosage) {
-    this.medication.properties.dosage = dosage;
-    this.props.addMedication(this.medication);
-  }
+  delete = () => {
+    if(!this.refs.form.validate().isValid()) {
+      return;
+    }
+    const form = this.refs.form.getValue();
+    const medication = Medication.extractFromForm(form);
 
-  updateUnits(units) {
-    this.medication.properties.units = units;
-    this.props.addMedication(this.medication);
-  }
-
-  updateComments(comments) {
-    this.medication.properties.comments = comments;
-    this.props.addMedication(this.medication);
+    this.props.deleteMedication(medication);
   }
 
   render() {
+    let deleteButton;
+    if (this.props.isEditModal()) {
+      deleteButton = <Button text='Delete' style={styles.buttonContainer} onPress={this.delete} />;
+    }
+
     return (
       <Modal
         animationType="fade"
@@ -71,44 +79,21 @@ export default class UpdateMedicationModal extends Component<{}> {
         onRequestClose={this.props.closeModal} >
         <View style={styles.modalContainer}>
           <View style={styles.modal}>
-            <Text style={styles.title}>Add Medication</Text>
-            <Text>Medication Name:</Text>
-            <TextInput style={styles.notesInput}
-              multiline={false}
-              numberOfLines={1}
-              value={this.medication.properties.drugName}
-              onChangeText={this.updateName} />
-            <Text>Quantity:</Text>
-            <TextInput style={styles.notesInput}
-              multiline={false}
-              numberOfLines={1}
-              value={this.medication.properties.quantity}
-              onChangeText={this.updateQuantity} />
-            <Text>Dosage</Text>
-            <TextInput style={styles.notesInput}
-              multiline={false}
-              numberOfLines={1}
-              value={this.medication.properties.dosage}
-              onChangeText={this.updateDosage} />
-            <Text>Units:</Text>
-            <TextInput style={styles.notesInput}
-              multiline={false}
-              numberOfLines={1}
-              value={this.medication.properties.units}
-              onChangeText={this.updateUnits} />
-            <Text>Comments:</Text>
-            <TextInput style={styles.notesInput}
-              multiline={false}
-              numberOfLines={1}
-              value={this.medication.properties.comments}
-              onChangeText={this.updateComments} />
-            <View style={styles.modalFooter}>
-              <Button style={styles.buttonContainer} onPress={this.props.closeModal}
-                text='Cancel' />
-
-              <Button style={styles.buttonContainer}
-                onPress={this.props.saveModal}
-                text='Save' />
+            <View style={styles.form}>
+              <Form ref="form"
+                type={this.Medication}
+                value={this.props.formValues}
+                options={this.props.formOptions}
+                onChange={this.onFormChange} />
+              <View style={styles.modalFooter}>
+                <Button text='Cancel'
+                  style={styles.buttonContainer}
+                  onPress={this.props.closeModal} />
+                <Button text='Save'
+                  style={styles.buttonContainer}
+                  onPress={this.submit} />
+                {deleteButton}
+              </View>
             </View>
           </View>
         </View>
@@ -118,18 +103,14 @@ export default class UpdateMedicationModal extends Component<{}> {
 }
 
 export const styles = StyleSheet.create({
-  title: {
-    textAlign: 'center',
-    fontSize: 24
-  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
   },
   modal: {
-    width: '80%',
-    height: '60%',
+    width: '60%',
+    height: '70%',
     backgroundColor: '#f6fdff',
     borderRadius: 8,
     borderWidth: 2,
@@ -148,11 +129,7 @@ export const styles = StyleSheet.create({
     width: 150,
     height: 40,
   },
-  notesInput: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    width: '90%',
-    margin: 8,
-    borderWidth: 1
+  form: {
+    width: '80%',
   }
 });
