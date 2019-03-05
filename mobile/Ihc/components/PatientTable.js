@@ -197,9 +197,11 @@ export const styles = StyleSheet.create({
     alignSelf: 'stretch',
     flexDirection: 'row',
   },
+  
   text: {
     textAlign: 'center',
   },
+
   notes: {
     height: '100%',
     width: '100%',

@@ -17,6 +17,11 @@ export default class Medication {
     return medication;
   }
 
+  static extractFromForm(form) {
+    const medication = Object.assign({}, form);
+    return;
+  }
+
 }
 
 Medication.schema = {

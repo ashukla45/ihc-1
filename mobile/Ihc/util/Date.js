@@ -15,7 +15,7 @@ export function formatDate(date) {
 
 // Convert yyyymmdd to mm/dd/yy
 export function shortDate(date) {
-  return date.slice(4,6) + '/' + date.slice(6) + '/' + date.slice(2,4);
+  return date.slice(4,6) + '-' + date.slice(6) + '-' + date.slice(2,4);
 }
 
 // Given a Date object, returns string in format yyyymmdd

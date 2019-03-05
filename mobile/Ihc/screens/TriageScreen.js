@@ -70,6 +70,8 @@ class TriageScreen extends Component<{}> {
     fields: {
       statusClarification: {label: 'Status clarification (if picked Other)'},
       labsDone: {label: 'Did they get labs done?'},
+      bgl: {label: 'FSBG'},
+      a1c: {label: 'HbA1c'},
       date: {
         editable: false,
       }
@@ -278,8 +280,9 @@ class TriageScreen extends Component<{}> {
           />
 
           {
-            this.state.formValues.urineTestDone ?
-              (
+            this.state.formValues.labsDone && this.state.formValues.urineTestDone ?
+
+            (
                 <View style={styles.labsContainer}>
                   <TriageLabsWheel
                     updateLabResult={(name, result) =>
