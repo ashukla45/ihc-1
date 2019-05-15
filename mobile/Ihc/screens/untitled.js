@@ -3,20 +3,10 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
 } from 'react-native';
 import { Col, Grid } from 'react-native-easy-grid';
 import Container from '../components/Container';
 import Button from '../components/Button';
-import ScrollableTabView from 'react-native-scrollable-tab-view';
-import TabBar from 'react-native-underline-tabbar';
-import SoapScreen from '../screens/SoapScreen';
-
-
-const Page = ({label, page}) => (
-    <View style={styles.container}>
-    </View>
-);
 
 class PatientHomeScreen extends Component<{}> {
   /*
@@ -31,19 +21,7 @@ class PatientHomeScreen extends Component<{}> {
   constructor(props) {
     super(props);
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-    this.state = {
-      /*
-       * Hardcoded now, needs to be changed later (pass values in through props) 
-       *
-       */
-      nameText: "Billy Bob",
-      birthDateText: '10/03/1989',
-      genderText: 'Male',
-    };
-       
   }
-
-
 
   goToTriage = () => {
     this.props.navigator.push({
@@ -90,79 +68,55 @@ class PatientHomeScreen extends Component<{}> {
     if (event.id === 'willAppear') {
       this.props.clearMessages();
     }
-  } 
+  }
 
   render() {
+    const date = new Date();
+    //const dateString = `${date.getMonth()} ${date.getDate()}, ${date.getYear()}`;
+    const dateString = this.props.todayDateString || date.toDateString();
     return (
-      <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'stretch',
-      }}>
+      <Container >
+        <Text style={styles.title}>
+          {this.props.name}
+        </Text>
 
-      <View style ={{
-        flexDirection: 'row',
-        alignItems: 'stretch',
-        paddingTop: 20
-      }}>
+        <Text style={styles.title}>
+          {dateString}
+        </Text>
 
+        <View style={styles.gridContainer}>
+          <Grid>
+            <Col style={styles.col}>
+              <Button onPress={this.goToTriage}
+                style={styles.button}
+                text='Triage' />
 
-     <Text style={styles.name}>
-            {this.state.nameText}{'\n'}
-              {this.state.genderText}{' | '}
-              {this.state.birthDateText}
-         </Text>   
-     </View>    
+              <Button onPress={this.goToSoap}
+                style={styles.button}
+                text='SOAP' />
 
-     <View style={[styles.container, {paddingTop: 10}]}>
-          <ScrollableTabView
-              tabBarActiveTextColor="#53ac49"        
-              renderTabBar={() => <TabBar underlineColor="#53ac49" />}>    
+              <Button onPress={this.goToMedicationList}
+                style={styles.button}
+                text='Medications' />
+            </Col>
 
-            <Page tabLabel={{label: "Triage"}} label="Triage"/>
-            <SoapScreen tabLabel={{label: "Soap"}}/>
-            <Page tabLabel={{label: "Pharmacy/Lab"}} label="Pharmacy/Lab"/>
-            <Page tabLabel={{label: "Growth Chart"}} label="Growth Chart"/>
-          </ScrollableTabView>
+            <Col style={styles.col}>
+              <Button onPress={this.goToHistory}
+                style={styles.button}
+                text='History' />
 
+              <Button onPress={this.goToGrowthChart}
+                style={styles.button}
+                text='Growth Chart' />
+            </Col>
+          </Grid>
         </View>
-      </View>
+      </Container>
     );
   }
-};
-
+}
 
 const styles = StyleSheet.create({
-    container: {
-    flex: 1,
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-    fontSize: 28,
-  },
-
-  profText:
-  {
-    flex: 1,
-  },
-  name: 
-  {
-    margin: 20,
-    fontSize: 30, 
-    paddingTop: 30,
-  },
-   MainContainer: {
-    flex: 1,
-    flexDirection:'row',
-    margin: 20,
-  },
   gridContainer: {
     flex: 1,
     maxWidth: '80%',
@@ -191,3 +145,14 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(null, mapDispatchToProps)(PatientHomeScreen);
+
+
+<View style = { styles.profText }>
+        <Text style={styles.name}>
+            {this.state.nameText}{'\n'}
+        <Text style={{color: 'red'}}>
+          {this.state.birthDateText}
+        </Text>
+      </Text> 
+    </View>
+    </Container>  

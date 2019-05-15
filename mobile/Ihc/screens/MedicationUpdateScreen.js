@@ -30,8 +30,9 @@ class MedicationUpdateScreen extends Component<{}> {
   DrugUpdateForm = t.struct({
     name: t.String, // drug name
     dose: t.String,
-    frequency: t.String,
-    duration: t.String,
+    dosagePercentage: t.Number,
+    NumberOfTimesPerDay: t.String,
+    duration: t.Number,
     notes: t.maybe(t.String)
   });
 
@@ -39,6 +40,9 @@ class MedicationUpdateScreen extends Component<{}> {
     fields: {
       name: {
         editable: this.props.action === 'new'
+      },
+      dosagePercentage: {
+        placeholder: '.'
       },
       notes: {
         multiline: true,
